@@ -5,11 +5,19 @@ const DEFAULT_STORE_ID = "default-store";
 
 export const dynamic = "force-dynamic";
 
+function getAppUrl() {
+  const configuredUrl = process.env.NEXT_PUBLIC_APP_URL;
+  const vercelUrl = process.env.VERCEL_PROJECT_PRODUCTION_URL ?? process.env.VERCEL_URL;
+  const appUrl = configuredUrl ?? (vercelUrl ? `https://${vercelUrl}` : "http://localhost:3000");
+
+  return appUrl.replace(/\/$/, "");
+}
+
 export default async function AdminQrPage() {
-  const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000";
+  const appUrl = getAppUrl();
   const { token, expiresAt } = await createCheckinToken(DEFAULT_STORE_ID);
   const checkinPath = `/checkin/${DEFAULT_STORE_ID}`;
-  const checkinUrl = `${appUrl.replace(/\/$/, "")}${checkinPath}?token=${token}`;
+  const checkinUrl = `${appUrl}${checkinPath}?token=${token}`;
 
   return (
     <div className="space-y-6">
